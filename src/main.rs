@@ -1,5 +1,5 @@
 use iced::widget::text;
-use iced::{Element, Sandbox, Settings};
+use iced::{Element, Sandbox, Settings, Theme};
 
 fn main() -> iced::Result {
     Warden::run(Settings::default())
@@ -26,5 +26,9 @@ impl Sandbox for Warden{
 
     fn view(&self) -> Element<'_, Message> {
         text("Hello Warden").into()
+    }
+
+    fn theme(&self) -> Theme {
+        Theme::Dark
     }
 }
