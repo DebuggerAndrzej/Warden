@@ -1,5 +1,5 @@
 use iced::executor;
-use iced::widget::{button, column, container, row};
+use iced::widget::{button, column, container, row, text};
 use iced::{Application, Command, Element, Settings, Theme};
 use std::io;
 use std::path::Path;
@@ -55,7 +55,10 @@ impl Application for Warden {
 
     fn view(&self) -> Element<'_, Message> {
         let controls = row![button("open").on_press(Message::Open)];
-        container(column!(controls)).into()
+        let file_content = text(&self.content);
+        container(column![controls, file_content])
+            .padding(10)
+            .into()
     }
 
     fn theme(&self) -> Theme {
