@@ -1,6 +1,6 @@
 use iced::executor;
-use iced::widget::{button, column, container, row, text};
-use iced::{Application, Command, Element, Settings, Theme};
+use iced::widget::{button, column, container, row, scrollable, text};
+use iced::{Application, Command, Element, Length, Settings, Theme};
 use std::io;
 use std::path::Path;
 use std::sync::Arc;
@@ -12,11 +12,13 @@ fn main() -> iced::Result {
 struct Warden {
     content: String,
     error: Option<Error>,
+    current_scroll_offset: scrollable::RelativeOffset,
 }
 #[derive(Debug, Clone)]
 enum Message {
     FileOpened(Result<Arc<String>, Error>),
     Open,
+    Scrolled(scrollable::Viewport),
 }
 
 impl Application for Warden {
@@ -30,6 +32,7 @@ impl Application for Warden {
             Self {
                 content: String::from("Hej"),
                 error: None,
+                current_scroll_offset: scrollable::RelativeOffset::START,
             },
             Command::none(),
         )
@@ -50,13 +53,22 @@ impl Application for Warden {
                 self.error = Some(error);
                 Command::none()
             }
+            Message::Scrolled(viewport) => {
+                self.current_scroll_offset = viewport.relative_offset();
+                Command::none()
+            }
         }
     }
 
     fn view(&self) -> Element<'_, Message> {
         let controls = row![button("open").on_press(Message::Open)];
         let file_content = text(&self.content);
-        container(column![controls, file_content])
+
+        let scrollable_content = scrollable(file_content)
+            .width(Length::Fill)
+            .height(Length::Fill);
+
+        container(column![controls, scrollable_content])
             .padding(10)
             .into()
     }
